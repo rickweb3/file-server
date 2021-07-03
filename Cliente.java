@@ -66,7 +66,7 @@ public class Cliente {
 			String ipDestino = ler.next();
 			System.out.print("Informe o diretório onde deseja salvar o arquivo: ");
 			String diretorio = ler.next();
-			
+			ler.close();
 			
 			try {
 				
