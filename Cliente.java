@@ -10,6 +10,7 @@ class Cliente {
 		String modifiedSentence;
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		
+		System.out.println("Cliente\n");
 		
 		// Estabelece conexão com o Servidor Principal (Endereço IP Localhost e PORTA 3334)
 		Socket clientSocket = new Socket("localhost", 9876);
@@ -17,7 +18,7 @@ class Cliente {
 		
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		System.out.print("Informe o nome do arquivo: ");
+		System.out.print("Informe o nome do arquivo com a sua extensão: ");
 		nomeArquivo = inFromUser.readLine();
 		outToServer.writeBytes(nomeArquivo + '\n');
 		
@@ -27,23 +28,8 @@ class Cliente {
 		modifiedSentence = inFromServer.readLine();
 		System.out.println("Servidor Principal Respondeu: " + modifiedSentence);
 		
-// A depender da resposta do servidor entro em uma estrutura de condição IF		
-//		if(modifiedSentence.equals(modifiedSentence)) {
-//			
-//			try {
-//			
-//				Socket clientSocket = new Socket()
-//			
-//			} catch (OutOfMemoryError e) {
-//				
-//				System.err.println("Oooops, o arquivo é muito grande!");
-//			
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			
-//			
-//		}
+		
+		// A depender da resposta do servidor entro em uma estrutura de condição IF		
 		
 		
 		// Fecha conexão do cliente

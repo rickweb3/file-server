@@ -53,29 +53,30 @@ class Servidor {
 				sendData = clientSentence.getBytes();
 				
 				
-				// Crio o pacote UDP com as informações: NomeArquivo, Tamanho do arquivo, IP do Servidor e PORTA do Servidor Principal
+// -------------------------------------------------------------------------------------------------------------------------------				
+				
+				// Crio o PACOTE UDP com as informações: 
+				// NomeArquivo, Tamanho do arquivo, IP do Servidor e PORTA do Servidor Principal
 				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, porta);
 				
 				
+				// Envia o pacote acima para todos o UDPServidorArquivo
+				DatagramSocket clientSocket = new DatagramSocket();
+				clientSocket.send(sendPacket);
 				
-				
-				// Cria um DatagramSocket e logo após envia o pacote via UDP
-				// Servidor Principal pergunta se algum UDPServidorArquivo tem o arquivo
-				DatagramSocket servidorSocket = new DatagramSocket();
-				servidorSocket.send(sendPacket);
-				
-				
-				// Essa parte é a resposta de todos os servidores UDPServidorArquivo
+	
+				// Recebe resposta do UPDServidorArquivo
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-				servidorSocket.receive(receivePacket);
-				String respostaUDPServidorArquivo = new String(receivePacket.getData());
-				System.out.println("Texto recebido do servidor: " + respostaUDPServidorArquivo + "\n");
-				
-				
-				
+				clientSocket.receive(receivePacket);
+				String resposta = new String(receivePacket.getData());
+				System.out.println("Resposta do UDPServidorArquivo: " + resposta);
+				clientSocket.close();
+				System.out.println("Socket cliente UDPServidorArquivo fechado!\n");
+								
 				
 				// Servidor Principal responde ao cliente com a lista de todos os UDPServidorArquivo que possue o arquivo
-				outToClient.writeBytes(respostaUDPServidorArquivo);
+				capitalizedSentence = resposta + '\n';				
+				outToClient.writeBytes(capitalizedSentence);	
 				
 			}
 		}

@@ -8,6 +8,9 @@ class UDPServidorArquivo {
 	public static void main(String args[]) throws Exception {
 		
 		int porta = 9876;
+		InetAddress address = InetAddress.getLocalHost();
+		String IPAddress = address.getHostAddress();
+		
 		
 		// DatagramSocket representa um Socket UDP
 		// Abre uma porta UDP - 9888
@@ -57,7 +60,7 @@ class UDPServidorArquivo {
 				
 				
 				
-				// Capturamos os dados do Servidor que enviou o datagrama, no caso ip e porta
+				// Capturamos os dados do Servidor que enviou o datagrama, no caso IP e PORTA
 				InetAddress IPAddressServerMain = receivePacket.getAddress();
 				int port = receivePacket.getPort();
 				
@@ -68,23 +71,19 @@ class UDPServidorArquivo {
 				// Se o arquivo não existir envia a resposta NAO para o Servidor Principal
 				if (arquivo.exists()) {
 					
+					
+					// Criando resposta em String que será enviada em forma de bytes para o Servidor Principal
+					// Essa resposta contém: Se existe arquivo ou não (SIM, NAO), PORTA do UDPServidorArquivo e IP do UDPServidorArquivo
 					String resposta = "SIM";
-					sendData = resposta.getBytes();
+					String respostaCompleta = resposta.concat("&").concat(IPAddress).concat("&").concat(Integer.toString(porta));
+					
+					sendData = respostaCompleta.getBytes();
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
-					System.out.println("Enviando " + resposta + " para o Servidor Principal...");
+					System.out.println("Enviando " + respostaCompleta + " para o Servidor Principal...");
 					serverSocket.send(sendPacket);
 					
-				} else {
-					
-					String resposta = "NAO";
-					sendData = resposta.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
-					System.out.println("Enviando " + resposta + " para o Servidor Principal...");
-					serverSocket.send(sendPacket);					
-				}
-				
+				} 
 			}
-			
 		}
 	}
 }
