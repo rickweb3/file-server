@@ -92,8 +92,9 @@ public class TCPServidorArquivo {
 		
 		System.out.println("Servidor de Arquivos\n");
 		
-	
-		// Porta 3334
+		
+		// ServerSocket representa um socket TCP
+		// Abre uma porta TCP - 3334
 		try ( ServerSocket arqSocket = new ServerSocket(3334)) { 
 			//arqSocket.setSoTimeout(timeout);
 			
