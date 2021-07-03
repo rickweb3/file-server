@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 
 class UDPServidorArquivo {
@@ -7,7 +8,6 @@ class UDPServidorArquivo {
 	public static void main(String args[]) throws Exception {
 		
 		int porta = 9876;
-		int numConn = 1;
 		
 		// DatagramSocket representa um Socket UDP
 		// Abre uma porta UDP - 9888
@@ -17,6 +17,14 @@ class UDPServidorArquivo {
 			byte[] sendData = new byte[1024];
 			
 			System.out.println("UDPServidorArquivo");
+			
+			
+			// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
+			Scanner ler = new Scanner(System.in);
+			System.out.print("\nInforme o endereço padrão do diretório de arquivos: ");
+			String diretorio = ler.next();
+			
+			
 			
 			// Esse Loop deixa a conexão aberta para receber mensagens do Servidor Principal
 			while (true) {
@@ -33,26 +41,48 @@ class UDPServidorArquivo {
 				serverSocket.receive(receivePacket);
 				
 				
+				
 				// Armazena o pacote recebido na variável sentence
 				String sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
 				System.out.println("Nome do arquivo: " + sentence);
 				
+
 				
-				// Com o nome do arquivo em mãos temos que verificar se ele existe no diretório 
+				// Com o diretório completo em mãos, vamos conferir a existência do arquivo
+				// Cria uma instância da classe File:
+				String diretorioCompleto = diretorio.concat("\\").concat(sentence);
+				System.out.println("Diretório completo: " + diretorioCompleto);
+				File arquivo = new File(diretorioCompleto);
+				
 				
 				
 				
 				// Capturamos os dados do Servidor que enviou o datagrama, no caso ip e porta
-				InetAddress IPAddress = receivePacket.getAddress();
+				InetAddress IPAddressServerMain = receivePacket.getAddress();
 				int port = receivePacket.getPort();
 				
-		
-				String capitalizedSentence = sentence.toUpperCase();
-				sendData = capitalizedSentence.getBytes();
-				System.out.println("Enviando resposta ao Servidor Principal!");
 				
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-				serverSocket.send(sendPacket);
+				
+				// Usa a função exists para verificar se o arquivo existe ou não...
+				// Se o arquivo existir envia a resposta SIM para o Servidor Principal
+				// Se o arquivo não existir envia a resposta NAO para o Servidor Principal
+				if (arquivo.exists()) {
+					
+					String resposta = "SIM";
+					sendData = resposta.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
+					System.out.println("Enviando " + resposta + " para o Servidor Principal...");
+					serverSocket.send(sendPacket);
+					
+				} else {
+					
+					String resposta = "NAO";
+					sendData = resposta.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
+					System.out.println("Enviando " + resposta + " para o Servidor Principal...");
+					serverSocket.send(sendPacket);					
+				}
+				
 			}
 			
 		}

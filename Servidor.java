@@ -26,7 +26,7 @@ class Servidor {
 			
 			while (true) {
 				
-				System.out.println("Aguardando mensagem...");
+				System.out.print("Aguardando mensagem...");
 				Socket connectionSocket = welcomeSocket.accept();
 				
 				
@@ -36,7 +36,7 @@ class Servidor {
 				DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 				clientSentence = inFromClient.readLine();
 				System.out.println("\nCliente " + connectionSocket.getInetAddress() + " - " + connectionSocket.getPort());
-				System.out.println("Solicita arquivo: " + clientSentence + "\n");
+				System.out.println("Solicita arquivo: " + clientSentence);
 				
 				
 				
@@ -49,12 +49,14 @@ class Servidor {
 				byte[] receiveData = new byte[1024];
 				
 				
-				// Armazeno o nome do arquivo enviadop pelo Cliente em sendData
+				// Armazeno o nome do arquivo enviado pelo Cliente em sendData
 				sendData = clientSentence.getBytes();
 				
 				
 				// Crio o pacote UDP com as informações: NomeArquivo, Tamanho do arquivo, IP do Servidor e PORTA do Servidor Principal
 				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, porta);
+				
+				
 				
 				
 				// Cria um DatagramSocket e logo após envia o pacote via UDP
@@ -63,21 +65,17 @@ class Servidor {
 				servidorSocket.send(sendPacket);
 				
 				
-				
-				
-				
 				// Essa parte é a resposta de todos os servidores UDPServidorArquivo
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				servidorSocket.receive(receivePacket);
-				System.out.println("Resposta: " + receivePacket);
+				String respostaUDPServidorArquivo = new String(receivePacket.getData());
+				System.out.println("Texto recebido do servidor: " + respostaUDPServidorArquivo + "\n");
 				
 				
 				
 				
-				
-				// Servidor Principal responde ao cliente
-				capitalizedSentence = clientSentence.toUpperCase() + '\n';				
-				outToClient.writeBytes(capitalizedSentence);
+				// Servidor Principal responde ao cliente com a lista de todos os UDPServidorArquivo que possue o arquivo
+				outToClient.writeBytes(respostaUDPServidorArquivo);
 				
 			}
 		}
