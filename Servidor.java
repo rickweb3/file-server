@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 
+
 class Servidor {
 	
 	public static void main(String args[]) throws Exception {
@@ -55,6 +56,15 @@ class Servidor {
 				
 // -------------------------------------------------------------------------------------------------------------------------------				
 				
+				
+				// Assim que o Servidor Principal recebe a solicitação do cliente
+				// É enviada uma mensagem brodacast para todos os UDPServidorArquivo
+				// Eles tem no máximo 10 segundos para retornar se possuem o arquivo
+					
+				
+				
+				
+				
 				// Crio o PACOTE UDP com as informações: 
 				// NomeArquivo, Tamanho do arquivo, IP do Servidor e PORTA do Servidor Principal
 				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, porta);
@@ -63,6 +73,9 @@ class Servidor {
 				// Envia o pacote acima para todos o UDPServidorArquivo
 				DatagramSocket clientSocket = new DatagramSocket();
 				clientSocket.send(sendPacket);
+				
+				
+				
 				
 	
 				// Recebe resposta do UPDServidorArquivo
@@ -75,10 +88,18 @@ class Servidor {
 								
 				
 				// Servidor Principal responde ao cliente com a lista de todos os UDPServidorArquivo que possue o arquivo
-				capitalizedSentence = resposta + '\n';				
-				outToClient.writeBytes(capitalizedSentence);	
+				
+				if (!resposta.isEmpty()) {
+					capitalizedSentence = resposta + '\n';				
+					outToClient.writeBytes(capitalizedSentence);
+				} else {
+					capitalizedSentence = "NAO";				
+					outToClient.writeBytes(capitalizedSentence);
+				}
+					
 				
 			}
 		}
 	}
 }
+

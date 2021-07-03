@@ -7,9 +7,13 @@ class UDPServidorArquivo {
 	
 	public static void main(String args[]) throws Exception {
 		
+		
+		// Esses dados são referentes ao UDPServidorArquivo
 		int porta = 9876;
+		String portaString = Integer.toString(porta);
 		InetAddress address = InetAddress.getLocalHost();
 		String IPAddress = address.getHostAddress();
+		String nome = address.getHostName();
 		
 		
 		// DatagramSocket representa um Socket UDP
@@ -74,15 +78,14 @@ class UDPServidorArquivo {
 					
 					// Criando resposta em String que será enviada em forma de bytes para o Servidor Principal
 					// Essa resposta contém: Se existe arquivo ou não (SIM, NAO), PORTA do UDPServidorArquivo e IP do UDPServidorArquivo
-					String resposta = "SIM";
-					String respostaCompleta = resposta.concat("&").concat(IPAddress).concat("&").concat(Integer.toString(porta));
+					String respostaCompleta = nome.concat("&").concat(IPAddress).concat("&").concat(portaString).concat("&").concat(diretorioCompleto);
 					
 					sendData = respostaCompleta.getBytes();
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
-					System.out.println("Enviando " + respostaCompleta + " para o Servidor Principal...");
+					System.out.println("Enviando " + nome + "&" + IPAddress + " para o Servidor Principal...");
 					serverSocket.send(sendPacket);
 					
-				} 
+				}
 			}
 		}
 	}

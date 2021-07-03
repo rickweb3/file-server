@@ -87,16 +87,14 @@ public class TCPServidorArquivo {
 	public static void main(String[] args){
 		
 		// Tempo de delay de conexão em milissegundos
-		int timeout = 120000; 
 		String caminho;
 		
-		System.out.println("Servidor de Arquivos\n");
+		System.out.println("TCP Servidor de Arquivo\n");
 		
 		
 		// ServerSocket representa um socket TCP
 		// Abre uma porta TCP - 3334
-		try ( ServerSocket arqSocket = new ServerSocket(3334)) { 
-			//arqSocket.setSoTimeout(timeout);
+		try ( ServerSocket arqSocket = new ServerSocket(9876)) { 
 			
 			// Pergunta qual o diretório do Servidor de Arquivos em questão
 			BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
