@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class Cliente {
+public class Cliente {
 	
 	public static void main(String args[]) throws Exception {
 		
@@ -36,8 +36,10 @@ class Cliente {
 		// Como já recebi a resposta do Servidor Principal, devo fechar a conexão do cliente
 		clientSocket.close();
 		
+
 		
-		// --------------------------------------------------------------------------------------------------------------
+		
+// --------------------------------------------------------------------------------------------------------------
 		// Caso exista algum Servidor Arquivo que possua o arquivo
 		// Irei me conectar ao mesmo via TCP
 		
@@ -54,9 +56,6 @@ class Cliente {
 		
 		System.out.print("\nLista de Servidores que possuem o arquivo");
 		System.out.println("\nNome: " + nome + " - IP: " + ipUDPServidorArquivo + " - " +  portaDestino  + "\n");	
-		
-		
-
 		
 		
 		if (modifiedSentence != "NAO") {
@@ -102,14 +101,10 @@ class Cliente {
 				e.printStackTrace();
 			}
 					
-			
-			
-			
 		} else {
 			
 			// Informa ao Cliente que nenhum Servidor de Arquivo possui o arquivo
 			System.out.println("Nenhum Servidor Arquivo possui o arquivo requisitado!");
-			
 		}		
 	}
 	
