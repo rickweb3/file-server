@@ -36,9 +36,10 @@ class Connection implements Runnable {
 	
 	@Override
 	public void run() {
+		
 		try {
 			
-			System.out.println("Servidor de Arquivos\n");
+			System.out.println("TCPServidorArquivo\n");
 			
 			System.out.println("Nova conexão recebida");
 			System.out.println("Info do cliente:");
@@ -81,7 +82,7 @@ class Connection implements Runnable {
 }
 
 
-public class ServidorArquivo {
+public class TCPServidorArquivo {
 
 	public static void main(String[] args){
 		
