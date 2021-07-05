@@ -14,12 +14,12 @@ public class Cliente {
 		System.out.println("Cliente\n");
 		
 		// Estabelece conexão com o Servidor Principal (Endereço IP, Localhost e PORTA 3334)
-		Socket clientSocket = new Socket("localhost", 9876);
+		Socket clientTCPSocket = new Socket("localhost", 4522);
 		
 		
-		// Pergunto ao cliente qual arquivo ele quer verificar a existência com o Servidor Principal
-		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		// Pergunto ao Usuario qual arquivo ele quer verificar a existência com o Servidor Principal
+		DataOutputStream outToServer = new DataOutputStream(clientTCPSocket.getOutputStream());
+		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientTCPSocket.getInputStream()));
 		System.out.print("Informe o nome do arquivo com a sua extensão: ");
 		nomeArquivo = inFromUser.readLine();
 		
@@ -34,7 +34,7 @@ public class Cliente {
 		
 		
 		// Como já recebi a resposta do Servidor Principal, devo fechar a conexão do cliente
-		clientSocket.close();
+		clientTCPSocket.close();
 		
 
 		
@@ -51,18 +51,19 @@ public class Cliente {
 		String porta = textoSeparado[2];
 		String diretorioDestino = textoSeparado[3];
 		int portaDestino = Integer.parseInt(porta);
+		int portaTCPArquivo = 3334;
 
 		
 		
 		System.out.print("\nLista de Servidores que possuem o arquivo");
-		System.out.println("\nNome: " + nome + " - IP: " + ipUDPServidorArquivo + " - " +  portaDestino  + "\n");	
+		System.out.println("\nNome: " + nome);	
 		
 		
 		if (modifiedSentence != "NAO") {
 			
 			// Pergunta ao Cliente de qual TCPServidorArquivo ele quer baixar
 			Scanner ler = new Scanner(System.in);
-			System.out.print("\nInforme o IP do Servidor Arquivo: ");
+			System.out.print("\nInforme o IP do TCPServidorArquivo: ");
 			String ipDestino = ler.next();
 			System.out.print("Informe o diretório onde deseja salvar o arquivo: ");
 			String diretorio = ler.next();
@@ -70,28 +71,35 @@ public class Cliente {
 			
 			try {
 				
-				// Estabelece conexão com o servidor escolhido pelo Cliente: ENDEREÇO - PORTA
-				Socket clientAndServerSocket = new Socket(ipDestino, portaDestino);
+				
+				// Estabelece conexão com o Servidor Principal (Endereço IP, Localhost e PORTA 3334)
+				Socket clientSocket = new Socket(ipDestino, 3334);
 				
 				
-				// Enviando o diretório de onde o arquivo está para o Servidor
-				DataOutputStream request = new DataOutputStream(clientAndServerSocket.getOutputStream());
-				request.writeBytes(diretorioDestino);
+				// Pergunto ao Usuario qual arquivo ele quer verificar a existência com o Servidor Principal
+				DataOutputStream toServer = new DataOutputStream(clientSocket.getOutputStream());
+				BufferedReader inServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			
 				
+				// Envio o Nome do Arquivo para o TCP Servidor Arquivo
+				toServer.writeBytes(nomeArquivo + '\n');
 				
+		
 				// Aguardando mensagem de retorno do servidor
 				InputStream response = clientSocket.getInputStream();
-				
+
 				
 				// Configurando arquivo recebido pelo TCPServidorArquivo
 				byte[] rawArq = response.readAllBytes();
 				FileOutputStream fos = new FileOutputStream(diretorio + "\\" + nomeArquivo);
+				
+				// Arquivo recebido com sucesso!
 				fos.write(rawArq);
 				fos.close();
 				
-				// Arquivo recebido com sucesso!
+				
 				// Fechando conexão TCP com TCPServidorArquivo
-				clientAndServerSocket.close();
+				clientSocket.close();
 				
 				
 			} catch(OutOfMemoryError e) {

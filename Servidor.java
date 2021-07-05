@@ -24,7 +24,7 @@ class ThreadCliente implements Runnable {
 			// IP do Servidor Principal para Broadcast
 			String servidor = "localhost";
 			InetAddress IPAddress = InetAddress.getByName(servidor);
-			int porta = 9876;
+			int porta = 4522;
 			
 			
 			
@@ -70,9 +70,8 @@ class ThreadCliente implements Runnable {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			clientSocket.receive(receivePacket);
 			String resposta = new String(receivePacket.getData());
-			System.out.println("Resposta do UDPServidorArquivo: " + resposta);
 			clientSocket.close();
-			System.out.println("Socket cliente UDPServidorArquivo fechado!\n");
+			System.out.println("Resposta enviada para o Cliente!\n");
 							
 			
 			// Servidor Principal responde ao cliente com a lista de todos os UDPServidorArquivo que possue o arquivo
@@ -100,18 +99,18 @@ public class Servidor {
 		
 		
 		// Porta do Servidor Principal
-		int porta = 9876;
+		int porta = 4522;
 		
 		
 		System.out.println("Servidor Principal\n");
 		
 		
 		// ServerSocket representa um socket TCP
-		// Abre uma porta TCP - 9876
+		// Abre uma porta TCP - 4522
 		try (ServerSocket welcomeSocket = new ServerSocket(porta)) { 
 			
 			while (true) {
-				System.out.print("Aguardando conexão com o Cliente...");
+				
 				Thread c = new Thread(new ThreadCliente(welcomeSocket.accept()));
 				c.start();
 			}

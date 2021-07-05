@@ -68,8 +68,7 @@ class ThreadUDPServidorArquivo implements Runnable {
 				serverSocket.send(sendPacket);
 				
 			}
-			
-			
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,14 +86,14 @@ public class UDPServidorArquivo {
 		
 		
 		// Esses dados são referentes ao UDPServidorArquivo
-		int porta = 9876;
+		int porta = 4522;
 		InetAddress address = InetAddress.getLocalHost();
 		String IPAddress = address.getHostAddress();
 		String nome = address.getHostName();
 		
 		
 		// DatagramSocket representa um Socket UDP
-		// Abre uma porta UDP - 9876
+		// Abre uma porta UDP - 4522
 		try (DatagramSocket serverSocket = new DatagramSocket(porta)) {
 			
 			byte[] receiveData = new byte[1024];
@@ -123,7 +122,7 @@ public class UDPServidorArquivo {
 				serverSocket.receive(receivePacket);
 				
 				
-				// Como eu já tenho uma mensagem do servidor, inicio uma Thread para tratar a solicitação
+				// Como eu já tenho uma mensagem do servidor, inicio uma Thread para tratar cada solicitação
 				Thread c = new Thread(new ThreadUDPServidorArquivo(serverSocket, receivePacket, porta, address, IPAddress, nome, diretorio));
 				c.start();
 				

@@ -5,58 +5,45 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Scanner;
 
 class Connection implements Runnable {
 	
 	private Socket connectionSocket;
-	private String caminho;
-	private String caminho2;
-	private String nomeArquivo;
+	private String diretorio;
 	
-	private void setCaminhoNomeArquivo(String request) {
-		
-		this.caminho = request.substring(0, request.indexOf("&"));
-		this.nomeArquivo = request.substring(request.indexOf("&")+1);
-	}
-	
-	public String getCaminho() {
-		return caminho;
-	}
-	
-	public String getNomeArquivo() {
-		return nomeArquivo;
-	}
-	
-	public Connection(Socket newSocket) {
+	public Connection(Socket newSocket, String diretorio) {
 		connectionSocket = newSocket;
+		this.diretorio = diretorio;
 	}
+	
 	
 	@Override
 	public void run() {
 		
 		try {
 			
-			System.out.println("TCPServidorArquivo\n");
-			
-			System.out.println("Nova conexão recebida");
-			System.out.println("Info do cliente:");
-			System.out.println("IP: "+ connectionSocket.getInetAddress());
-			System.out.println("Porta: "+ connectionSocket.getPort());
-			
-			BufferedReader request = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-			setCaminhoNomeArquivo(request.readLine());
+			// Dados referente a mensagem do cliente
+			String clientSentence;
+			String capitalizedSentence;
 			
 			
-			// Exibe o diretório do arquivo solicitado pelo cliente
-			System.out.println("Solicitando arquivo \"" + nomeArquivo + "\"");
-			System.out.println("Arquivo está em: \"" + caminho + "\"");
+			
+			// Crio as variáveis necessárias para escutar e enviar dados para o cliente
+			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			
 			
-			// Começa o processo de enviar o arquivo para o cliente
-			File ptrArquivo = new File(caminho,nomeArquivo);
+			// Recebe mensagem do Cliente
+			clientSentence = inFromClient.readLine();
+			
+
+			// Inicia o processo de enviar o arquivo para o cliente
+			File ptrArquivo = new File(diretorio, clientSentence);
 			FileInputStream fis = new FileInputStream(ptrArquivo);
 			DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
 			byte[] arqBytes = new byte [(int) ptrArquivo.length()];
@@ -83,42 +70,36 @@ class Connection implements Runnable {
 
 
 public class TCPServidorArquivo {
-
-	public static void main(String[] args){
+	
+	public static void main(String args[]) throws Exception {
 		
-		// Tempo de delay de conexão em milissegundos
-		String caminho;
 		
-		System.out.println("TCP Servidor de Arquivo\n");
+		// Porta do Servidor Principal
+		int porta = 3334;
+		
+		
+		System.out.println("TCP Servidor Arquivo\n");
+		
+		
+		// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
+		Scanner ler = new Scanner(System.in);
+		System.out.print("\nInforme o endereço padrão do diretório de arquivos: ");
+		String diretorio = ler.next();
+		ler.close();
 		
 		
 		// ServerSocket representa um socket TCP
 		// Abre uma porta TCP - 3334
-		try ( ServerSocket arqSocket = new ServerSocket(9876)) { 
-			
-			// Pergunta qual o diretório do Servidor de Arquivos em questão
-			BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Informe o diretório padrão: ");
-			caminho = inFromUser.readLine();
+		try (ServerSocket arqSocket = new ServerSocket(porta)) { 
 			
 			while (true) {
-				System.out.println("Aguardando conexão...");
-				Thread c = new Thread(new Connection(arqSocket.accept()));
+				
+				Thread c = new Thread(new Connection(arqSocket.accept(), diretorio));
 				c.start();
+				
 			}
+			
 		}
-		catch(FileNotFoundException e) {
-			System.err.println("Não foi possível encontrar o arquivo!");
-		}
-		catch(SocketTimeoutException e){
-				System.err.println("Tempo máximo de espera atingido!");
-				System.err.println("Serviço encerrado");
-		}
-		catch (IOException e){
-			e.printStackTrace();
-		}
-	
 	}
-
 }
 
