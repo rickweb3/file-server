@@ -38,17 +38,19 @@ class Connection implements Runnable {
 			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			
 			
+			
 			// Recebe mensagem do Cliente
 			clientSentence = inFromClient.readLine();
 			
 
+			
 			// Inicia o processo de enviar o arquivo para o cliente
 			File ptrArquivo = new File(diretorio, clientSentence);
 			FileInputStream fis = new FileInputStream(ptrArquivo);
 			DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
 			byte[] arqBytes = new byte [(int) ptrArquivo.length()];
 			
-			System.out.println("Lendo arquivo");
+			System.out.println("\nLendo arquivo: " + clientSentence);
 			fis.read(arqBytes);
 			fis.close();
 			
@@ -58,8 +60,10 @@ class Connection implements Runnable {
 			System.out.println("Enviado!");
 			connectionSocket.close();
 			
+			
 			// Arquivo enviado com sucesso, com isso fecha a conexão
 			System.out.println("Conexão Finalizada");
+			
 		}
 		catch (Exception e){
 			e.printStackTrace();

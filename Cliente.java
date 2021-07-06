@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
@@ -13,8 +14,11 @@ public class Cliente {
 		
 		System.out.println("Cliente\n");
 		
+		
+		
 		// Estabelece conexão com o Servidor Principal (Endereço IP, Localhost e PORTA 3334)
 		Socket clientTCPSocket = new Socket("localhost", 4522);
+		
 		
 		
 		// Pergunto ao Usuario qual arquivo ele quer verificar a existência com o Servidor Principal
@@ -24,79 +28,111 @@ public class Cliente {
 		nomeArquivo = inFromUser.readLine();
 		
 		
+		
 		// Envio o Nome do Arquivo para o Servidor Principal
 		outToServer.writeBytes(nomeArquivo + '\n');
 		
 		
-		// Aguarda retorno do ServidorPrincipal 
-		// com a Lista de ServidoresArquivos que contém o arquivo (modifiedSentence)
-		modifiedSentence = inFromServer.readLine();
+		
+		
+		// Recebe a resposta do Servidor Principal que é uma lista de String
+		ObjectInputStream objectInput = new ObjectInputStream(clientTCPSocket.getInputStream());
+		
+		
+		
+		
+		// Converte a resposta do Servidor Principal em um ArrayList (String)
+		Object object = objectInput.readObject();
+		ArrayList<String> listaRespostaUDPServidorArquivo = new ArrayList<String>();
+		listaRespostaUDPServidorArquivo = (ArrayList<String>) object;
+		
+		
 		
 		
 		// Como já recebi a resposta do Servidor Principal, devo fechar a conexão do cliente
 		clientTCPSocket.close();
 		
-
 		
+		
+		
+		// Variáveis que serão utilizadas durante a iteração da lista que contém a resposta
+		String[] textoSeparado;
+		String nome;
+		String ipUDPServidorArquivo;
+		String porta;
+		String diretorioDestino;
+		
+		
+		
+		
+		// Realizo a iteração sobre a lista que no caso é todos os servidores que possuem o arquivo
+		System.out.println("\nLista de Servidores que possuem o arquivo:");
+		for(String item : listaRespostaUDPServidorArquivo) {
+			
+			textoSeparado = item.split("&");
+			nome = textoSeparado[0].replace("[", "");
+			ipUDPServidorArquivo = textoSeparado[1];
+			porta = textoSeparado[2];
+			diretorioDestino = textoSeparado[3];
+			System.out.println(nome + " - " + ipUDPServidorArquivo);
+			
+		}
+		
+		
+
 		
 // --------------------------------------------------------------------------------------------------------------
-		// Caso exista algum Servidor Arquivo que possua o arquivo
-		// Irei me conectar ao mesmo via TCP
-		
 
-		// Separa a resposta do Servidor Principal em suas respectivas variáveis
-		String[] textoSeparado = modifiedSentence.split("&");
-		String nome = textoSeparado[0];
-		String ipUDPServidorArquivo = textoSeparado[1];
-		String porta = textoSeparado[2];
-		String diretorioDestino = textoSeparado[3];
-		int portaDestino = Integer.parseInt(porta);
+
 		int portaTCPArquivo = 3334;
 
-		
-		
-		System.out.print("\nLista de Servidores que possuem o arquivo");
-		System.out.println("\nNome: " + nome);	
-		
-		
-		if (modifiedSentence != "NAO") {
+				
+		if (!listaRespostaUDPServidorArquivo.isEmpty()) {
 			
 			// Pergunta ao Cliente de qual TCPServidorArquivo ele quer baixar
 			Scanner ler = new Scanner(System.in);
 			System.out.print("\nInforme o IP do TCPServidorArquivo: ");
 			String ipDestino = ler.next();
+		
+		
 			System.out.print("Informe o diretório onde deseja salvar o arquivo: ");
 			String diretorio = ler.next();
 			ler.close();
 			
+			
 			try {
 				
+				// Estabelece conexão com o TCPServidorArquivo (Endereço IP, Localhost e PORTA 3334)
+				Socket clientSocket = new Socket(ipDestino, portaTCPArquivo);
 				
-				// Estabelece conexão com o Servidor Principal (Endereço IP, Localhost e PORTA 3334)
-				Socket clientSocket = new Socket(ipDestino, 3334);
 				
-				
-				// Pergunto ao Usuario qual arquivo ele quer verificar a existência com o Servidor Principal
+				// Pergunto ao Usuario qual arquivo ele quer verificar a existência com o TCPServidorArquivo
 				DataOutputStream toServer = new DataOutputStream(clientSocket.getOutputStream());
 				BufferedReader inServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			
 				
-				// Envio o Nome do Arquivo para o TCP Servidor Arquivo
+				// Envio o Nome do Arquivo para o TCPServidorArquivo
 				toServer.writeBytes(nomeArquivo + '\n');
 				
 		
-				// Aguardando mensagem de retorno do servidor
+				
+				// Aguardando mensagem de retorno do TCPServidorArquivo
 				InputStream response = clientSocket.getInputStream();
 
+				
 				
 				// Configurando arquivo recebido pelo TCPServidorArquivo
 				byte[] rawArq = response.readAllBytes();
 				FileOutputStream fos = new FileOutputStream(diretorio + "\\" + nomeArquivo);
 				
+				
 				// Arquivo recebido com sucesso!
 				fos.write(rawArq);
 				fos.close();
 				
+				
+				System.out.println("\n\nArquivo: " + nomeArquivo + " recebido com sucesso!");
+				System.out.println("Encerrando conexão...");
 				
 				// Fechando conexão TCP com TCPServidorArquivo
 				clientSocket.close();

@@ -67,7 +67,7 @@ class ThreadUDPServidorArquivo implements Runnable {
 				System.out.println("Enviando " + nome + "&" + IPAddress + " para o Servidor Principal...");
 				serverSocket.send(sendPacket);
 				
-			}
+			} 
 						
 		} catch (Exception e) {
 			e.printStackTrace();

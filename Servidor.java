@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 
 class ThreadCliente implements Runnable {
@@ -8,7 +9,7 @@ class ThreadCliente implements Runnable {
 	
 	
 	public ThreadCliente(Socket newSocket) {
-		connectionSocket = newSocket;
+		this.connectionSocket = newSocket;
 	}
 	
 	
@@ -17,21 +18,18 @@ class ThreadCliente implements Runnable {
 		
 		try {
 			
-			// Dados referente a mensagem do cliente
+			// Variável referente a mensagem do cliente
 			String clientSentence;
-			String capitalizedSentence;
 			
 			// IP do Servidor Principal para Broadcast
 			String servidor = "localhost";
-			InetAddress IPAddress = InetAddress.getByName(servidor);
+		
 			int porta = 4522;
-			
 			
 			
 			// Recebe mensagem do Cliente
 			// Mensagem do Cliente está na variável clientSentence
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			clientSentence = inFromClient.readLine();
 			System.out.println("\nCliente " + connectionSocket.getInetAddress() + " - " + connectionSocket.getPort());
 			System.out.println("Solicita arquivo: " + clientSentence);
@@ -51,14 +49,11 @@ class ThreadCliente implements Runnable {
 			
 // -------------------------------------------------------------------------------------------------------------------------------				
 			
-			// Assim que o Servidor Principal recebe a solicitação do cliente
-			// É enviada uma mensagem brodacast para todos os UDPServidorArquivo
-			// Eles tem no máximo 10 segundos para retornar se possuem o arquivo
-			
-
 			// Crio o PACOTE UDP com as informações: 
 			// NomeArquivo, Tamanho do arquivo, IP do Servidor Principal e PORTA do Servidor Principal
+			InetAddress IPAddress = InetAddress.getByName(servidor);
 			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, porta);
+						
 			
 			
 			// Envia o pacote acima para todos o UDPServidorArquivo
@@ -66,22 +61,63 @@ class ThreadCliente implements Runnable {
 			clientSocket.send(sendPacket);
 			
 			
-			// Recebe resposta do UDPServidorArquivo
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			clientSocket.receive(receivePacket);
-			String resposta = new String(receivePacket.getData());
-			clientSocket.close();
-			System.out.println("Resposta enviada para o Cliente!\n");
-							
 			
-			// Servidor Principal responde ao cliente com a lista de todos os UDPServidorArquivo que possue o arquivo
-			if (!resposta.isEmpty()) {
-				capitalizedSentence = resposta + '\n';				
-				outToClient.writeBytes(capitalizedSentence);
+			// Recurso necessário para poder receber resposta do UDPServidorArquivo
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			
+			
+			
+			
+			// Crio a lista que irá armazenar as respostas dos UDPServidorArquivo
+			ArrayList<String> respostaUDPServidorArquivo = new ArrayList();
+			
+			
+			
+			// Crio um ObjectOutputStream para poder enviar a Lista via Socket
+			ObjectOutputStream objectOutput = new ObjectOutputStream(connectionSocket.getOutputStream());
+
+			
+			
+			
+// -----------------------------------------------------------------------------------------------------------------------------			
+
+			try {
+				
+				String mensagem;
+				String mensagem2 = "[DESKTOP-VIO6I3U&192.168.0.103&4522&C:\\Users\\Henrique\\Documents\\Diretorio\\teste.mp4";
+				
+//				int timeout = 10000;
+//				connectionSocket.setSoTimeout(timeout);
+				
+				clientSocket.receive(receivePacket);
+//				respostaUDPServidorArquivo.add(mensagem = new String(receivePacket.getData()));
+				respostaUDPServidorArquivo.add(mensagem2);
+				respostaUDPServidorArquivo.add(mensagem2);
+				respostaUDPServidorArquivo.add(mensagem2);
+
+				
+
+			} catch (SocketTimeoutException e) {
+				
+			} 
+			
+			
+// -----------------------------------------------------------------------------------------------------------------------------
+			
+
+			
+			if(!respostaUDPServidorArquivo.isEmpty()) {
+				objectOutput.writeObject(respostaUDPServidorArquivo);
+				
 			} else {
-				capitalizedSentence = "NAO";				
-				outToClient.writeBytes(capitalizedSentence);
+				objectOutput.writeBytes("NAO");
 			}
+			
+			
+			System.out.println("Resposta enviada para o Cliente!\n");
+			
+			// Fecho conexão com o cliente, pois já recebi a resposta dos servidores
+			clientSocket.close();
 			
 			
 		} catch(Exception e) {
