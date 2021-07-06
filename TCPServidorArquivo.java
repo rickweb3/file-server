@@ -88,7 +88,7 @@ public class TCPServidorArquivo {
 		// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
 		Scanner ler = new Scanner(System.in);
 		System.out.print("\nInforme o endereço padrão do diretório de arquivos: ");
-		String diretorio = ler.next();
+		String diretorio = ler.nextLine();
 		ler.close();
 		
 		

@@ -41,7 +41,6 @@ class ThreadUDPServidorArquivo implements Runnable {
 			// Com o diretório completo em mãos, vamos conferir a existência do arquivo
 			// Cria uma instância da classe File:
 			String diretorioCompleto = diretorio.concat("\\").concat(sentence);
-			System.out.println("Diretório completo: " + diretorioCompleto);
 			File arquivo = new File(diretorioCompleto);
 			
 			
@@ -103,8 +102,9 @@ public class UDPServidorArquivo {
 			
 			// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
 			Scanner ler = new Scanner(System.in);
-			System.out.print("\nInforme o endereço padrão do diretório de arquivos: ");
-			String diretorio = ler.next();
+			System.out.println("\nInforme o endereço padrão do diretório de arquivos: ");
+			String diretorio = ler.nextLine();
+			System.out.println(diretorio);
 			ler.close();
 		
 			

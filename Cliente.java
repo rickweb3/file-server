@@ -92,11 +92,11 @@ public class Cliente {
 			// Pergunta ao Cliente de qual TCPServidorArquivo ele quer baixar
 			Scanner ler = new Scanner(System.in);
 			System.out.print("\nInforme o IP do TCPServidorArquivo: ");
-			String ipDestino = ler.next();
+			String ipDestino = ler.nextLine();
 		
 		
 			System.out.print("Informe o diretório onde deseja salvar o arquivo: ");
-			String diretorio = ler.next();
+			String diretorio = ler.nextLine();
 			ler.close();
 			
 			
