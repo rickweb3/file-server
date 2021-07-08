@@ -4,21 +4,15 @@ import java.util.Scanner;
 
 
 class ThreadUDPServidorArquivo implements Runnable {
-
-	private DatagramSocket serverSocket;
-	private DatagramPacket receivePacket;
-	private int porta;
-	private String IPAddress;
-	private String nome;
+	
+	private String mensagem;
+	private int portaUDP;
 	private String diretorio;
 
 	
-	public ThreadUDPServidorArquivo(DatagramSocket serverSocket, DatagramPacket receivePacket, int porta, InetAddress address, String IPAddress, String nome, String diretorio) {
-		this.serverSocket = serverSocket;
-		this.receivePacket = receivePacket;
-		this.porta = porta;
-		this.IPAddress = IPAddress;
-		this.nome = nome;
+	public ThreadUDPServidorArquivo(String mensagem, int portaUDP, String diretorio) {
+		this.mensagem = mensagem;
+		this.portaUDP = portaUDP;
 		this.diretorio = diretorio;
 	}
 	
@@ -27,46 +21,35 @@ class ThreadUDPServidorArquivo implements Runnable {
 	public void run() {
 		
 		try {
-			
-			byte[] sendData = new byte[1024];
-			
-			String portaString = Integer.toString(porta);
-			
-			// Armazena o pacote recebido na variável sentence
-			String sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
-			System.out.println("Nome do arquivo: " + sentence);
-			
-			
-			
-			// Com o diretório completo em mãos, vamos conferir a existência do arquivo
-			// Cria uma instância da classe File:
-			String diretorioCompleto = diretorio.concat("\\").concat(sentence);
+					
+			// Concateno a string diretorio e o nome do arquivo
+			String diretorioCompleto = diretorio.concat("\\").concat(mensagem);
 			File arquivo = new File(diretorioCompleto);
 			
 			
-			
-			// Capturamos os dados do Servidor que enviou o datagrama, no caso IP e PORTA
-			InetAddress IPAddressServerMain = receivePacket.getAddress();
-			int port = receivePacket.getPort();
-			
-			
-			
 			// Usa a função exists para verificar se o arquivo existe ou não...
-			// Se o arquivo existir envia a resposta SIM para o Servidor Principal
-			// Se o arquivo não existir envia a resposta NAO para o Servidor Principal
 			if (arquivo.exists()) {
 				
+				InetAddress address = InetAddress.getLocalHost();
+				String ipAddress = address.getHostAddress();
+				String nome = address.getHostName();
 				
-				// Criando resposta em String que será enviada em forma de bytes para o Servidor Principal
-				// Essa resposta contém: Se existe arquivo ou não (SIM, NAO), PORTA do UDPServidorArquivo e IP do UDPServidorArquivo
-				String respostaCompleta = nome.concat("&").concat(IPAddress).concat("&").concat(portaString).concat("&").concat(diretorioCompleto);
 				
+				// SendData - Enviar resposta para o Servidor Principal
+				byte[] sendData = new byte[1024];
+				String respostaCompleta = nome.concat("&").concat(ipAddress);
 				sendData = respostaCompleta.getBytes();
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressServerMain, port);
-				System.out.println("Enviando " + nome + "&" + IPAddress + " para o Servidor Principal...");
-				serverSocket.send(sendPacket);
+				
+				
+				// Envia a resposta para o Servidor Principal - Utilizo a porta 5000
+				MulticastSocket s = new MulticastSocket();
+				DatagramPacket pack = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("239.0.0.1"), 5000);
+				s.send(pack);
+				
+				s.close();
 				
 			} 
+			
 						
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,50 +66,49 @@ public class UDPServidorArquivo {
 	
 	public static void main(String args[]) throws Exception {
 		
-		
-		// Esses dados são referentes ao UDPServidorArquivo
-		int porta = 4522;
-		InetAddress address = InetAddress.getLocalHost();
-		String IPAddress = address.getHostAddress();
-		String nome = address.getHostName();
+		System.out.println("UDPServidorArquivo");
 		
 		
-		// DatagramSocket representa um Socket UDP
-		// Abre uma porta UDP - 4522
-		try (DatagramSocket serverSocket = new DatagramSocket(porta)) {
-			
-			byte[] receiveData = new byte[1024];
+		// Assim que o UDPServidorArquivo inicia, já peço o Diretório padrão dele
+		Scanner ler = new Scanner(System.in);
+		System.out.print("\nInforme o diretório padrão de arquivos: ");
+		String diretorio = ler.nextLine();
+		ler.close();
+		
+		
+		int portaUDP = 4522;
 
-			
-			System.out.println("UDPServidorArquivo");
-			
-			// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
-			Scanner ler = new Scanner(System.in);
-			System.out.println("\nInforme o endereço padrão do diretório de arquivos: ");
-			String diretorio = ler.nextLine();
-			System.out.println(diretorio);
-			ler.close();
 		
+		// Inicio uma conexão MULTICAST
+		try(MulticastSocket multicast = new MulticastSocket(6000)) {
 			
+			
+			// Endereço de um grupo MULTICAST
+			InetAddress grupo = InetAddress.getByName("239.0.0.1");
+			
+			
+			// Ingressando em um grupo para receber mensagens enviadas pelo SERVER PRINCIPAL
+			multicast.joinGroup(grupo);
+			
+			
+			// Crio as variáveis necessárias para receber a mensagem do Server Principal			
+			byte rec[] = new byte[1024];
+			DatagramPacket mensagemServer = new DatagramPacket(rec, rec.length);
+			
+			
+				
 			// Esse Loop deixa a conexão aberta para receber mensagens do Servidor Principal
 			while (true) {
 				
+				// Recebo a mensagem do Servidor Principal
+				multicast.receive(mensagemServer);
+				String mensagem = new String(mensagemServer.getData(), 0, mensagemServer.getLength());
 				
-				// Nessa parte o UDPServidor fica esperando receber alguma mensagem do Servidor Principal
-				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-				System.out.println("\nAguardando mensagem...");
-				System.out.println("Esperando por datagrama UDP na porta " + porta);
-				
-				
-				// O Servidor de Arquivos recebeu a resposta do Servidor Principal - Datagrama UDP
-				serverSocket.receive(receivePacket);
-				
-				
-				// Como eu já tenho uma mensagem do servidor, inicio uma Thread para tratar cada solicitação
-				Thread c = new Thread(new ThreadUDPServidorArquivo(serverSocket, receivePacket, porta, address, IPAddress, nome, diretorio));
+				// Executo a Thread responsável por verificar a existência do arquivo e responder o servidor
+				Thread c = new Thread(new ThreadUDPServidorArquivo(mensagem, portaUDP, diretorio));
 				c.start();
 				
 			}
-		}
+		} 
 	}
 }

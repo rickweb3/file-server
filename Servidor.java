@@ -17,15 +17,19 @@ class ThreadCliente implements Runnable {
 	public void run() {
 		
 		try {
+
+// -------------------------------------------------------------------------------------------------------------------------------				
+
+			//  RECEBENDO MENSAGENS DE CLIENTE
+			
 			
 			// Variável referente a mensagem do cliente
 			String clientSentence;
 			
-			// IP do Servidor Principal para Broadcast
+			// IP do Servidor Principal para MultiCast
 			String servidor = "localhost";
 		
-			int porta = 4522;
-			
+						
 			
 			// Recebe mensagem do Cliente
 			// Mensagem do Cliente está na variável clientSentence
@@ -34,91 +38,95 @@ class ThreadCliente implements Runnable {
 			System.out.println("\nCliente " + connectionSocket.getInetAddress() + " - " + connectionSocket.getPort());
 			System.out.println("Solicita arquivo: " + clientSentence);
 			
+				
+			
+// -------------------------------------------------------------------------------------------------------------------------------				
+			
+			// ENVIANDO MENSAGEM VIA MULTICAST PARA TODOS OS UDPSERVIDORARQUIVO
 			
 			
 			// A variável sendData é para enviar o nome do arquivo via UDP para todos os UDPServidorArquivo
 			byte[] sendData = new byte[1024];
-			
-			// A variável receiveData é para receber todas as respostas via UDP de todos os UDPServidorArquivo
-			byte[] receiveData = new byte[1024];
 			
 			// Armazeno o nome do arquivo enviado pelo Cliente em sendData
 			sendData = clientSentence.getBytes();
 			
 			
 			
-// -------------------------------------------------------------------------------------------------------------------------------				
 			
-			// Crio o PACOTE UDP com as informações: 
-			// NomeArquivo, Tamanho do arquivo, IP do Servidor Principal e PORTA do Servidor Principal
-			InetAddress IPAddress = InetAddress.getByName(servidor);
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, porta);
-						
+			// Definindo o endereço de envio do pacote, neste caso o endereço do MULTICAST
+			InetAddress addr = InetAddress.getByName("239.0.0.1");
 			
-			
-			// Envia o pacote acima para todos o UDPServidorArquivo
+			// Pacote UDP que será enviado: NomeArquivo, Tamanho Arquivo, IP MULTICAST, PORTA MULTICAST
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, addr, 6000);
 			DatagramSocket clientSocket = new DatagramSocket();
 			clientSocket.send(sendPacket);
 			
 			
+
+// -------------------------------------------------------------------------------------------------------------------------------				
+
+			// RECEBENDO MENSAGENS DO UDPSERVIDORARQUIVO
+						
 			
-			// Recurso necessário para poder receber resposta do UDPServidorArquivo
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			
-			
-			
-			
-			// Crio a lista que irá armazenar as respostas dos UDPServidorArquivo
+			// Lista que irá armazenar as respostas dos UDPServidorArquivo
 			ArrayList<String> respostaUDPServidorArquivo = new ArrayList();
 			
-			
-			
-			// Crio um ObjectOutputStream para poder enviar a Lista via Socket
+			// Crio um ObjectOutputStream para poder enviar a Lista via Socket para o Cliente
 			ObjectOutputStream objectOutput = new ObjectOutputStream(connectionSocket.getOutputStream());
-
 			
 			
 			
-// -----------------------------------------------------------------------------------------------------------------------------			
-
+			
+			
+			// Crio um MulticastSocket para poder receber as respostas dos Servidores
+			MulticastSocket s = new MulticastSocket(5000);
+			String group = "239.0.0.1";
+			s.joinGroup(InetAddress.getByName(group));
+			
+			
+			// A variável receiveData é para receber todas as respostas via UDP de todos os UDPServidorArquivo
+			byte[] receiveData = new byte[1024];
+			DatagramPacket pack = new DatagramPacket(receiveData, receiveData.length);
+			
+			
+			
+			
+			
+			// Defino um TIMEOUT para ficar recebendo as respostas do UDPServidorArquivo
+			int timeout = 10000;
+			String mensagem;
+			
+			// Aciono o TIMEOUT
+			s.setSoTimeout(timeout);
+			
+			// Fico recebendo respostas dos UDPServidor
+			// Quanto o TIMEOUT estoura, envio a resposta pelo CATCH
 			try {
 				
-				String mensagem;
-				String mensagem2 = "[DESKTOP-VIO6I3U&192.168.0.103&4522&C:\\Users\\Henrique\\Documents\\Diretorio\\teste.mp4";
+				while(true) {
+					s.receive(pack);
+					mensagem = new String(pack.getData(), 0, pack.getLength());
+					respostaUDPServidorArquivo.add(mensagem);
+				}
 				
-//				int timeout = 10000;
-//				connectionSocket.setSoTimeout(timeout);
+			} catch(SocketTimeoutException e) {
 				
-				clientSocket.receive(receivePacket);
-//				respostaUDPServidorArquivo.add(mensagem = new String(receivePacket.getData()));
-				respostaUDPServidorArquivo.add(mensagem2);
-				respostaUDPServidorArquivo.add(mensagem2);
-				respostaUDPServidorArquivo.add(mensagem2);
-
+				// Fecho conexão com o cliente, pois já recebi a resposta dos servidores
+				clientSocket.close();
 				
-
-			} catch (SocketTimeoutException e) {
-				
-			} 
-			
-			
-// -----------------------------------------------------------------------------------------------------------------------------
-			
-
-			
-			if(!respostaUDPServidorArquivo.isEmpty()) {
-				objectOutput.writeObject(respostaUDPServidorArquivo);
-				
-			} else {
-				objectOutput.writeBytes("NAO");
-			}
+				if(!respostaUDPServidorArquivo.isEmpty()) {
+					
+					objectOutput.writeObject(respostaUDPServidorArquivo);
+					
+				} else {
+					objectOutput.writeObject(respostaUDPServidorArquivo);
+				}
+			}			
 			
 			
 			System.out.println("Resposta enviada para o Cliente!\n");
-			
-			// Fecho conexão com o cliente, pois já recebi a resposta dos servidores
-			clientSocket.close();
-			
+		
 			
 		} catch(Exception e) {
 			e.printStackTrace();

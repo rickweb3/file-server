@@ -38,48 +38,19 @@ public class Cliente {
 		// Recebe a resposta do Servidor Principal que é uma lista de String
 		ObjectInputStream objectInput = new ObjectInputStream(clientTCPSocket.getInputStream());
 		
-		
+
 		
 		
 		// Converte a resposta do Servidor Principal em um ArrayList (String)
 		Object object = objectInput.readObject();
 		ArrayList<String> listaRespostaUDPServidorArquivo = new ArrayList<String>();
 		listaRespostaUDPServidorArquivo = (ArrayList<String>) object;
+
 		
-		
-		
-		
-		// Como já recebi a resposta do Servidor Principal, devo fechar a conexão do cliente
+		// Como já recebi a resposta do Servidor Principal, devo fechar a conexão do cliente com o Server Principal
 		clientTCPSocket.close();
 		
 		
-		
-		
-		// Variáveis que serão utilizadas durante a iteração da lista que contém a resposta
-		String[] textoSeparado;
-		String nome;
-		String ipUDPServidorArquivo;
-		String porta;
-		String diretorioDestino;
-		
-		
-		
-		
-		// Realizo a iteração sobre a lista que no caso é todos os servidores que possuem o arquivo
-		System.out.println("\nLista de Servidores que possuem o arquivo:");
-		for(String item : listaRespostaUDPServidorArquivo) {
-			
-			textoSeparado = item.split("&");
-			nome = textoSeparado[0].replace("[", "");
-			ipUDPServidorArquivo = textoSeparado[1];
-			porta = textoSeparado[2];
-			diretorioDestino = textoSeparado[3];
-			System.out.println(nome + " - " + ipUDPServidorArquivo);
-			
-		}
-		
-		
-
 		
 // --------------------------------------------------------------------------------------------------------------
 
@@ -88,6 +59,27 @@ public class Cliente {
 
 				
 		if (!listaRespostaUDPServidorArquivo.isEmpty()) {
+			
+			
+			// Variáveis que serão utilizadas durante a iteração da lista que contém a resposta
+			String[] textoSeparado;
+			String nome;
+			String ipUDPServidorArquivo;
+			String porta;
+			String diretorioDestino;
+			
+			
+			// Realizo a iteração sobre a lista que no caso é todos os Servidor Arquivo que possue o arquivo
+			System.out.println("\nLista de Servidores que possuem o arquivo:");
+			for(String item : listaRespostaUDPServidorArquivo) {
+				
+				textoSeparado = item.split("&");
+				nome = textoSeparado[0].replace("[", "");
+				ipUDPServidorArquivo = textoSeparado[1];
+				System.out.println(nome + " - " + ipUDPServidorArquivo);
+				
+			}
+			
 			
 			// Pergunta ao Cliente de qual TCPServidorArquivo ele quer baixar
 			Scanner ler = new Scanner(System.in);
@@ -146,9 +138,8 @@ public class Cliente {
 			}
 					
 		} else {
-			
 			// Informa ao Cliente que nenhum Servidor de Arquivo possui o arquivo
-			System.out.println("Nenhum Servidor Arquivo possui o arquivo requisitado!");
+			System.out.println("Nenhum Servidor Arquivo possui o arquivo solicitado!");
 		}		
 	}
 	

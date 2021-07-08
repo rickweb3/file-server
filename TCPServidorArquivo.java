@@ -77,32 +77,42 @@ public class TCPServidorArquivo {
 	
 	public static void main(String args[]) throws Exception {
 		
-		
-		// Porta do Servidor Principal
-		int porta = 3334;
+		// O range da porta TCP que será utilizada começará a partir da PORTA 10000
+		int porta = 10000;
 		
 		
 		System.out.println("TCP Servidor Arquivo\n");
+
 		
+		// Verifica qual a próxima porta disponível para a comunicação TCP
+		while(true) {
+			
+			try {
+				
+				var ignored = new ServerSocket(porta);
+				break;
+				
+			} catch(IOException e) {
+				porta++;	
+			}
+		}
 		
-		// Assim que o UDPServidor Arquivo inicia já peço o Diretório padrão dele
+
+
+		// Assim que o TCPServidorArquivo inicia, já peço o Diretório PADRÃO dele
 		Scanner ler = new Scanner(System.in);
-		System.out.print("\nInforme o endereço padrão do diretório de arquivos: ");
+		System.out.print("\nInforme o diretório padrão de arquivos: ");
 		String diretorio = ler.nextLine();
 		ler.close();
 		
 		
 		// ServerSocket representa um socket TCP
-		// Abre uma porta TCP - 3334
+		// A porta TCP utilizada será a que foi descoberta no laço de repetição
 		try (ServerSocket arqSocket = new ServerSocket(porta)) { 
-			
 			while (true) {
-				
 				Thread c = new Thread(new Connection(arqSocket.accept(), diretorio));
 				c.start();
-				
-			}
-			
+			}	
 		}
 	}
 }
