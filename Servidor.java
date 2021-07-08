@@ -26,11 +26,8 @@ class ThreadCliente implements Runnable {
 			// Variável referente a mensagem do cliente
 			String clientSentence;
 			
-			// IP do Servidor Principal para MultiCast
-			String servidor = "localhost";
+
 		
-						
-			
 			// Recebe mensagem do Cliente
 			// Mensagem do Cliente está na variável clientSentence
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));

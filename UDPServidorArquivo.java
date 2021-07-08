@@ -45,6 +45,8 @@ class ThreadUDPServidorArquivo implements Runnable {
 					// Recebo a mensagem do Servidor Principal
 					multicast.receive(mensagemServer);
 					mensagem = new String(mensagemServer.getData(), 0, mensagemServer.getLength());
+					
+					// Inicia thread responsável por verificar existência do arquivo e devolver a resposta
 					Thread c = new Thread(new ThreadUDPVerificaArquivo(diretorio, porta, mensagem));
 					c.start();
 				}
@@ -80,7 +82,6 @@ class ThreadUDPVerificaArquivo implements Runnable {
 			
 			// Concateno a string diretorio e o nome do arquivo
 			String diretorioCompleto = diretorio.concat("\\").concat(mensagem);
-			System.out.println("Entrei aqui");
 			File arquivo = new File(diretorioCompleto);
 			
 			

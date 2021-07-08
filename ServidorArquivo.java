@@ -42,8 +42,7 @@ public class ServidorArquivo {
 		
 		
 		// Iniciando Thread TCP
-		ServerSocket arqSocket = new ServerSocket(portaTCP);
-		Thread threadTCP = new Thread(new ThreadTCPServidorArquivo(arqSocket.accept(), diretorio, portaTCP));
+		Thread threadTCP = new Thread(new ThreadTCPServidorArquivo(diretorio, portaTCP));
 		threadTCP.start();
 		
 	}
