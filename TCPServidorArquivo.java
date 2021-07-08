@@ -5,20 +5,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.util.Scanner;
 
-class Connection implements Runnable {
+class ThreadTCPServidorArquivo implements Runnable {
 	
 	private Socket connectionSocket;
 	private String diretorio;
+	private int portaTCP;
 	
-	public Connection(Socket newSocket, String diretorio) {
+	public ThreadTCPServidorArquivo(Socket newSocket, String diretorio, int portaTCP) {
 		connectionSocket = newSocket;
 		this.diretorio = diretorio;
+		this.portaTCP = portaTCP;
 	}
 	
 	
@@ -26,6 +31,10 @@ class Connection implements Runnable {
 	public void run() {
 		
 		try {
+			
+			
+			System.out.println("TCP Servidor Arquivo\n");
+						
 			
 			// Dados referente a mensagem do cliente
 			String clientSentence;
@@ -71,49 +80,3 @@ class Connection implements Runnable {
 	}
 	
 }
-
-
-public class TCPServidorArquivo {
-	
-	public static void main(String args[]) throws Exception {
-		
-		// O range da porta TCP que será utilizada começará a partir da PORTA 10000
-		int porta = 10000;
-		
-		
-		System.out.println("TCP Servidor Arquivo\n");
-
-		
-		// Verifica qual a próxima porta disponível para a comunicação TCP
-		while(true) {
-			
-			try {
-				
-				var ignored = new ServerSocket(porta);
-				break;
-				
-			} catch(IOException e) {
-				porta++;	
-			}
-		}
-		
-
-
-		// Assim que o TCPServidorArquivo inicia, já peço o Diretório PADRÃO dele
-		Scanner ler = new Scanner(System.in);
-		System.out.print("\nInforme o diretório padrão de arquivos: ");
-		String diretorio = ler.nextLine();
-		ler.close();
-		
-		
-		// ServerSocket representa um socket TCP
-		// A porta TCP utilizada será a que foi descoberta no laço de repetição
-		try (ServerSocket arqSocket = new ServerSocket(porta)) { 
-			while (true) {
-				Thread c = new Thread(new Connection(arqSocket.accept(), diretorio));
-				c.start();
-			}	
-		}
-	}
-}
-

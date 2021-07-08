@@ -75,8 +75,9 @@ public class Cliente {
 				
 				textoSeparado = item.split("&");
 				nome = textoSeparado[0].replace("[", "");
-				ipUDPServidorArquivo = textoSeparado[1];
-				System.out.println(nome + " - " + ipUDPServidorArquivo);
+				porta = textoSeparado[1];
+				ipUDPServidorArquivo = textoSeparado[2];
+				System.out.println(nome + " - " + porta + " - " + ipUDPServidorArquivo);
 				
 			}
 			

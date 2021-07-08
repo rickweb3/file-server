@@ -5,14 +5,13 @@ import java.util.Scanner;
 
 class ThreadUDPServidorArquivo implements Runnable {
 	
-	private String mensagem;
-	private int portaUDP;
+	private int porta;
 	private String diretorio;
+	private String mensagem;
 
 	
-	public ThreadUDPServidorArquivo(String mensagem, int portaUDP, String diretorio) {
-		this.mensagem = mensagem;
-		this.portaUDP = portaUDP;
+	public ThreadUDPServidorArquivo(String diretorio, int porta) {
+		this.porta = porta;
 		this.diretorio = diretorio;
 	}
 	
@@ -21,9 +20,67 @@ class ThreadUDPServidorArquivo implements Runnable {
 	public void run() {
 		
 		try {
+			
+			// Inicio uma conexão MULTICAST
+			try(MulticastSocket multicast = new MulticastSocket(6000)) {
+				
+				
+				// Endereço de um grupo MULTICAST
+				InetAddress grupo = InetAddress.getByName("239.0.0.1");
+				
+				
+				// Ingressando em um grupo para receber mensagens enviadas pelo SERVER PRINCIPAL
+				multicast.joinGroup(grupo);
+				
+				
+				// Crio as variáveis necessárias para receber a mensagem do Server Principal			
+				byte rec[] = new byte[1024];
+				DatagramPacket mensagemServer = new DatagramPacket(rec, rec.length);
+				
+				
 					
+				// Esse Loop deixa a conexão aberta para receber mensagens do Servidor Principal
+				while (true) {
+					
+					// Recebo a mensagem do Servidor Principal
+					multicast.receive(mensagemServer);
+					mensagem = new String(mensagemServer.getData(), 0, mensagemServer.getLength());
+					Thread c = new Thread(new ThreadUDPVerificaArquivo(diretorio, porta, mensagem));
+					c.start();
+				}
+				
+			} 
+						
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+}
+
+
+
+class ThreadUDPVerificaArquivo implements Runnable {
+	
+	private String diretorio;
+	private int porta;
+	private String mensagem;
+	
+	public ThreadUDPVerificaArquivo(String diretorio, int porta, String mensagem) {
+		this.porta = porta;
+		this.diretorio = diretorio;
+		this.mensagem = mensagem;
+	}
+	
+
+	@Override
+	public void run() {
+		try {
+			
 			// Concateno a string diretorio e o nome do arquivo
 			String diretorioCompleto = diretorio.concat("\\").concat(mensagem);
+			System.out.println("Entrei aqui");
 			File arquivo = new File(diretorioCompleto);
 			
 			
@@ -37,7 +94,8 @@ class ThreadUDPServidorArquivo implements Runnable {
 				
 				// SendData - Enviar resposta para o Servidor Principal
 				byte[] sendData = new byte[1024];
-				String respostaCompleta = nome.concat("&").concat(ipAddress);
+				String portaTCP = Integer.toString(porta);
+				String respostaCompleta = nome.concat("&").concat(portaTCP).concat("&").concat(ipAddress);
 				sendData = respostaCompleta.getBytes();
 				
 				
@@ -50,65 +108,11 @@ class ThreadUDPServidorArquivo implements Runnable {
 				
 			} 
 			
-						
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
 	
-}
-
-
-
-
-public class UDPServidorArquivo {
-	
-	public static void main(String args[]) throws Exception {
-		
-		System.out.println("UDPServidorArquivo");
-		
-		
-		// Assim que o UDPServidorArquivo inicia, já peço o Diretório padrão dele
-		Scanner ler = new Scanner(System.in);
-		System.out.print("\nInforme o diretório padrão de arquivos: ");
-		String diretorio = ler.nextLine();
-		ler.close();
-		
-		
-		int portaUDP = 4522;
-
-		
-		// Inicio uma conexão MULTICAST
-		try(MulticastSocket multicast = new MulticastSocket(6000)) {
-			
-			
-			// Endereço de um grupo MULTICAST
-			InetAddress grupo = InetAddress.getByName("239.0.0.1");
-			
-			
-			// Ingressando em um grupo para receber mensagens enviadas pelo SERVER PRINCIPAL
-			multicast.joinGroup(grupo);
-			
-			
-			// Crio as variáveis necessárias para receber a mensagem do Server Principal			
-			byte rec[] = new byte[1024];
-			DatagramPacket mensagemServer = new DatagramPacket(rec, rec.length);
-			
-			
-				
-			// Esse Loop deixa a conexão aberta para receber mensagens do Servidor Principal
-			while (true) {
-				
-				// Recebo a mensagem do Servidor Principal
-				multicast.receive(mensagemServer);
-				String mensagem = new String(mensagemServer.getData(), 0, mensagemServer.getLength());
-				
-				// Executo a Thread responsável por verificar a existência do arquivo e responder o servidor
-				Thread c = new Thread(new ThreadUDPServidorArquivo(mensagem, portaUDP, diretorio));
-				c.start();
-				
-			}
-		} 
-	}
 }

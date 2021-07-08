@@ -94,7 +94,7 @@ class ThreadCliente implements Runnable {
 			
 			
 			// Defino um TIMEOUT para ficar recebendo as respostas do UDPServidorArquivo
-			int timeout = 10000;
+			int timeout = 2000;
 			String mensagem;
 			
 			// Aciono o TIMEOUT
