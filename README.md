@@ -86,7 +86,9 @@ As seguintes ferramentas foram usadas na construção do projeto:
 ## 🦸 Dev's
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/rickweb3"><img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/55119449" width="100px;" alt="Henrique Prado"/><br /><sub><b>Henrique Prado</b></sub>
+    	<td align="center"><a href="https://github.com/rickweb3"><img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/55119449" width="100px;" alt="Henrique Prado"/><br /><sub><b>Henrique Prado</b></sub>
+	<td align="center"><a href="https://github.com/faelteles"><img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/63653883?v=4" width="100px;" alt="Rafael Antônio"/><br /><sub><b>Rafael Antônio</b></sub>
+	<td align="center"><a href="https://github.com/MarcosSD"><img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/63070489?v=4" width="100px;" alt="Marcos Machado"/><br /><sub><b>Marcos Machado</b></sub>
   </tr>
 
 ---
