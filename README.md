@@ -24,7 +24,7 @@
 
 ## 💻 Sobre o projeto
 
-Projeto prático desenvolvido na disciplina Sistemas Distribuídos do curso Sistemas de Informação da Universidade Federal
+O projeto Servidor de Arquivos foi desenvolvido na disciplina Sistemas Distribuídos do curso Sistemas de Informação da Universidade Federal
 de Sergipe - Campus Itabaiana
 
 ---
@@ -34,17 +34,39 @@ de Sergipe - Campus Itabaiana
 
 ## ⚙️ Features
 
-O site é **responsivo** e possue as seguintes seções:
+O Servidor de Arquivos contempla os seguintes requisitos:
 
-- [x] Home
-- [x] About us
-- [x] Services
-- [x] Our projects
-- [x] Our teams
-- [x] Happy clients
-- [x] Price
-- [x] Some facts
-- [x] Contact us
+O cliente(interface gráfica) irá abrir uma conexão TCP/IP via unicast com o servidor
+principal solicitando ao mesmo os nomes e endereços(IP) dos servidores de arquivos que
+contem um arquivo em especifico.
+
+Assim que o servidor principal recebe a solicitação do(s) cliente(s) o mesmo envia uma
+mensagem multicast ou broadcast na rede direcionada aos servidores de arquivos
+perguntando quais desses possuem o arquivo solicitado pelo cliente. Nesse momento o
+servidor principal determina um timeout de 10 segundos(sem receber mensagens) para
+receber a resposta dos servidores de arquivos que possuem aquele determinado arquivo.
+Obs: O Servidor principal pode receber várias solicitações ao mesmo tempo de vários
+clientes
+
+Assim que o servidor de arquivo recebe uma solicitação, o mesmo verifica em seu diretório
+padrão se o arquivo solicitado existe em sua base de arquivos. Caso exista envia uma
+mensagem para o servidor principal informando que possui aquele determinado arquivo e
+o seu nome(nome do computador) e caso não possua não irá fazer nada. Obs: O servidor
+de arquivos podem receber vários pedidos de pesquisas do servidor principal ao mesmo
+tempo.
+
+
+O servidor principal guarda em uma coleção todos os endereços e nomes de todos os
+servidores de arquivos que informaram possuir aquele arquivo e ao termino do timeout
+responde ao cliente informando todos os servidores de arquivos que possuem o arquivo
+solicitado.
+
+
+Assim que o cliente receber a lista dos servidores de arquivos que possuem o determinado
+arquivo, o usuário através da interface gráfica vai escolher da lista(que contem o nome do
+servidor e ip) qual servidor que o mesmo irá baixar o arquivo. Essa conexão será realizada
+através de uma conexão TCP/IP via unicast com o servidor escolhido. Obs: O servidor de
+arquivo pode enviar vários arquivos ao mesmo tempo para vários clientes.
 
 ---
 
