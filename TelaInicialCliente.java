@@ -5,9 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
@@ -45,7 +47,7 @@ public class TelaInicialCliente {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Cliente");
@@ -66,15 +68,18 @@ public class TelaInicialCliente {
 		btnNome.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
+				
 				Cliente cliente = new Cliente();
 				
 				try {
+					
 					// guarda o arraylist com os servidores de arquivos e passa o nome do arqivo pesquisado
 					ArrayList<String> listaRespostaUDPServidorArquivo = cliente.requisitarArquivo(txtNome.getText());
 					
+					
 					// chama a tela de baixar arquivos e passa o nome do arquivo e a lista de servidores de arquivos  
 					TelaClienteBaixar janelaBaixar = new TelaClienteBaixar(txtNome.getText(),listaRespostaUDPServidorArquivo);
-					janelaBaixar.show();
+					janelaBaixar.setVisible(true);
 					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -85,6 +90,8 @@ public class TelaInicialCliente {
 		});
 		btnNome.setBounds(165, 161, 89, 23);
 		frame.getContentPane().add(btnNome);
+		
+		
 		
 		
 	}

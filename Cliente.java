@@ -149,7 +149,7 @@ public class Cliente {
 				return "Nenhum Servidor Arquivo possui o arquivo solicitado!";
 				
 			}	
-		return "Feito";
+		return "IP, diretório ou porta não encontrados.";
 	}
 	
 }
