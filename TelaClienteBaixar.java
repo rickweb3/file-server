@@ -6,12 +6,15 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
 
 public class TelaClienteBaixar extends JFrame {
 
@@ -81,7 +84,7 @@ public class TelaClienteBaixar extends JFrame {
 		txtIP.setColumns(10);
 		
 		txtDiretorio = new JTextField();
-		txtDiretorio.setBounds(216, 158, 194, 20);
+		txtDiretorio.setBounds(216, 158, 148, 20);
 		contentPane.add(txtDiretorio);
 		txtDiretorio.setColumns(10);
 		
@@ -114,8 +117,33 @@ public class TelaClienteBaixar extends JFrame {
 			txtServerList.append("Nenhum Servidor Arquivo possui o arquivo solicitado!");
 		}
 		
+		//Deixa textArea com texto fixo
 		txtServerList.setEditable(false);
 		
+		//Configura botão de selecionar diretório
+		JButton btnExplorar = new JButton("");
+		String curDir = System.getProperty("user.dir");
+		btnExplorar.setIcon(new ImageIcon(curDir+"\\src\\folder.png"));
+		
+		btnExplorar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				JFileChooser file = new JFileChooser();
+		         file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		         int i= file.showSaveDialog(null);
+		       if (i==1){
+		           txtDiretorio.setText("");
+		       } else {
+		           File arquivo = file.getSelectedFile();
+		           txtDiretorio.setText(arquivo.getPath());
+		       }
+				
+			}
+		});
+		btnExplorar.setBounds(369, 158, 41, 20);
+		contentPane.add(btnExplorar);
+		
+		//Configura ação de botão de baixar arquivo
 		JButton btnBaixar = new JButton("Baixar ");
 		btnBaixar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -147,6 +175,6 @@ public class TelaClienteBaixar extends JFrame {
 		contentPane.add(btnBaixar);
 		
 		
+		
 	}
-
 }
