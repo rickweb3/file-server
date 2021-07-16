@@ -22,7 +22,7 @@
 
 
 
-## 💻 Sobre o projeto
+## 💻 Sobre
 
 O projeto Servidor de Arquivos foi desenvolvido na disciplina Sistemas Distribuídos do curso Sistemas de Informação da Universidade Federal
 de Sergipe - Campus Itabaiana
