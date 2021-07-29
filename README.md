@@ -23,7 +23,7 @@ O projeto Servidor de Arquivos foi desenvolvido por: <a href="https://github.com
 ## Projeto desenvolvido
 
 <div style="align-items: center">
-	<a href="https://github.com/rickweb3/file-server/blob/main/img_readme/overview_file_server_1.png#center"></a>
+	<img src="img_readme/overview_file_server_1.png">
 </div>
 
 ![Screenshot](img_readme/overview_file_server_1.png)<br/>
