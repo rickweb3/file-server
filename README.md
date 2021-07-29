@@ -22,7 +22,7 @@ O projeto Servidor de Arquivos foi desenvolvido por: <a href="https://github.com
 
 ## Projeto desenvolvido
 
-<div style="align-items: center">
+<div style="display: flex, align-items: center">
 	<img src="img_readme/overview_file_server_1.png">
 </div>
 
