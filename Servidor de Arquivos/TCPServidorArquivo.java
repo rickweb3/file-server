@@ -111,6 +111,11 @@ class ThreadTCPEnviaArquivo implements Runnable {
 			response.write(arqBytes);
 			
 			
+			// Barra de Progresso
+			BarraDeProgresso barra = new BarraDeProgresso();
+			barra.setVisible(true);
+			
+			
 			// Fecha a conexão com o cliente, pois já recebi o arquivo
 			System.out.println("Enviado!");
 
