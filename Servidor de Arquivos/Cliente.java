@@ -120,16 +120,25 @@ public class Cliente {
 					InputStream response = clientSocket.getInputStream();
 	
 					
+					
+					
+					// Criando arquivo que sera recebido pelo servidor
+					FileOutputStream fileOut = new FileOutputStream(diretorio + "\\" + nomeArquivo);
+					
+					// Criando canal de transferencia
+					InputStream socketIn = clientSocket.getInputStream();
+					
 					// Configurando arquivo recebido pelo TCPServidorArquivo
-					byte[] rawArq = response.readAllBytes();
-					FileOutputStream fos = new FileOutputStream(diretorio + "\\" + nomeArquivo);
+					byte[] cbuffer = new byte[1024];
+					int bytesRead;
 					
-					
-					// Arquivo recebido com sucesso!
-					fos.write(rawArq);
-					fos.close();
+					while ((bytesRead = response.read(cbuffer)) != -1) {
+						fileOut.write(cbuffer, 0, bytesRead);
+					}
 					
 					String mensagemFinal = "\nArquivo: " + nomeArquivo + " recebido com sucesso!\nSalvo em: " + diretorio +"\nEncerrando conexão...";
+					
+					
 					
 					// Fechando conexão TCP com TCPServidorArquivo
 					clientSocket.close();

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -105,10 +106,20 @@ class ThreadTCPEnviaArquivo implements Runnable {
 			fis.close();
 			
 			
+			
 			// Envia o arquivo para o Cliente
+			System.out.println("Enviando arquivo solicitado...");
+			
+			FileInputStream fileIn = new FileInputStream(diretorio + "\\" + nomeArquivo);           
+			OutputStream socketOut = connectionSocket.getOutputStream();
+			
+			byte[] cbuffer = new byte[1024];
+	        int bytesRead;
 
-			System.out.println("Enviando...");
-			response.write(arqBytes);
+	        while ((bytesRead = fileIn.read(cbuffer)) != -1) {
+	            socketOut.write(cbuffer, 0, bytesRead);
+	            socketOut.flush();
+	        }
 			
 			
 			// Barra de Progresso
@@ -119,6 +130,7 @@ class ThreadTCPEnviaArquivo implements Runnable {
 			// Fecha a conexão com o cliente, pois já recebi o arquivo
 			System.out.println("Enviado!");
 
+			fileIn.close();
 			connectionSocket.close();
 			
 		} catch (Exception e) {
